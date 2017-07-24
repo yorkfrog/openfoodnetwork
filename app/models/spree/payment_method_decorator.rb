@@ -11,7 +11,7 @@ Spree::PaymentMethod.class_eval do
 
   after_initialize :init
 
-  validates :distributors, presence: { message: "^At least one hub must be selected" }
+  validates_with DistributorsValidator
 
   # -- Scopes
   scope :managed_by, lambda { |user|

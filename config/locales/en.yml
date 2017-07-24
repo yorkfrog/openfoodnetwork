@@ -82,6 +82,9 @@ en:
       subject: "Please confirm the email address for %{enterprise}"
     welcome:
       subject: "%{enterprise} is now on %{sitename}"
+  producer_mailer:
+    order_cycle:
+      subject: "Order cycle report for %{producer}"
   home: "OFN"
   title: Open Food Network
   welcome_to: 'Welcome to '
@@ -127,6 +130,7 @@ en:
   cancel: Cancel
   edit: Edit
   distributors: Distributors
+  distribution: Distribution
   order_cycles: Order Cycles
   enterprise_limit: Enterprise Limit
   bulk_order_management: Bulk Order Management
@@ -140,7 +144,21 @@ en:
   current: Current
   available: Available
   dashboard: Dashboard
-
+  undefined: undefined
+  unused: unused
+  admin_and_handling: Admin & Handling
+  profile: Profile
+  supplier_only: Supplier Only
+  weight: Weight
+  volume: Volume
+  items: Items
+  summary: Summary
+  detailed: Detailed
+  updated: Updated
+  'yes': "Yes"
+  'no': "No"
+  'y': 'Y'
+  'n': 'N'
   admin:
     # Common properties / models
     date: Date
@@ -162,6 +180,8 @@ en:
     weight: Weight
     volume: Volume
     items: Items
+    select_all: Select all
+    obsolete_master: Obsolete master
 
     # General form elements
     quick_search: Quick Search
@@ -204,6 +224,10 @@ en:
         finalise_user_invoices: "Finalise User Invoices"
         finalise_user_invoice_explained: "Use this button to finalize all invoices in the system for the previous calendar month. This task can be set up to run automatically once a month."
         update_user_invoices: "Update User Invoices"
+      errors:
+        accounts_distributor: must be set if you wish to create invoices for enterprise users.
+        default_payment_method: must be set if you wish to create invoices for enterprise users.
+        default_shipping_method: must be set if you wish to create invoices for enterprise users.
 
     business_model_configuration:
       edit:
@@ -256,6 +280,8 @@ en:
         update_address: 'Update Address'
         confirm_delete: 'Sure to delete?'
         search_by_email: "Search by email/code..."
+      destroy:
+        has_associated_orders: 'Delete failed: customer has associated orders with his shop'
 
     cache_settings:
       show:
@@ -264,10 +290,18 @@ en:
         order_cycle: Order Cycle
         status: Status
         diff: Diff
+        error: Error
 
     contents:
       edit:
         title: Content
+        header: Header
+        home_page: Home page
+        producer_signup_page: Producer signup page
+        hub_signup_page: Hub signup page
+        group_signup_page: Group signup page
+        footer_and_external_links: Footer and External Links
+        your_content: Your content
 
     enterprise_fees:
       index:
@@ -282,6 +316,12 @@ en:
     enterprise_groups:
       index:
         new_button: New Enterprise Group
+
+    enterprise_roles:
+      form:
+        manages: manages
+      enterprise_role:
+        manages: manages
 
     products:
       unit_name_placeholder: 'eg. bunches'
@@ -321,7 +361,8 @@ en:
         inventory_powertip: This is your inventory of products. To add products to your inventory, select 'New Products' from the Viewing dropdown.
         hidden_powertip: These products have been hidden from your inventory and will not be available to add to your shop. You can click 'Add' to add a product to you inventory.
         new_powertip: These products are available to be added to your inventory. Click 'Add' to add a product to your inventory, or 'Hide' to hide it from view. You can always change your mind later!
-
+      controls:
+        back_to_my_inventory: Back to my inventory
     orders:
       index:
         capture: "Capture"
@@ -346,7 +387,12 @@ en:
         max_fulfilled_units: "Max Fulfilled Units"
         order_error: "Some errors must be resolved before you can update orders.\nAny fields with red borders contain errors."
         variants_without_unit_value: "WARNING: Some variants do not have a unit value"
-
+      invoice:
+        issued_on: Issued on
+        tax_invoice: TAX INVOICE
+        code: Code
+        from: From
+        to: To
     enterprise:
       select_outgoing_oc_products_from: Select outgoing OC products from
 
@@ -510,8 +556,8 @@ en:
         producer_description_text: Add your products to Open Food Network, allowing hubs to stock your products in their stores.
         producer_shop: Producer Shop
         sell_your_produce: Sell your own produce
-        sell_description_text: Sell your products directly to customers through your very own Open Food Network shopfront.
-        sell_description_text2: A Producer Shop is for your produce only, if you want to sell produce grown/produced off site, select 'Producer Hub'.
+        producer_shop_description_text: Sell your products directly to customers through your very own Open Food Network shopfront.
+        producer_shop_description_text2: A Producer Shop is for your produce only, if you want to sell produce grown/produced off site, select 'Producer Hub'.
         producer_hub: Producer Hub
         producer_hub_text: Sell produce from self and others
         producer_hub_description_text: Your enterprise is the backbone of your local food system. You can sell your own produce as well as produce aggregated from other enterprises through your shopfront on the Open Food Network.
@@ -602,7 +648,73 @@ en:
         title: Invoice Settings
         invoice_style2?: Use the alternative invoice model that includes total tax breakdown per rate and tax rate info per item (not yet suitable for countries displaying prices excluding tax)
         enable_receipt_printing?: Show options for printing receipts using thermal printers in order dropdown?
-
+    overview:
+      enterprises_header:
+        ofn_with_tip: Enterprises are Producers and/or Hubs and are the basic unit of organisation within the Open Food Network.
+      enterprises_hubs_tabs:
+        has_no_payment_methods: "%{enterprise} has no payment methods"
+        has_no_shipping_methods: "%{enterprise} has no shipping methods"
+        has_no_enterprise_fees: "%{enterprise} has no enterprise fees"
+    enterprise_issues:
+      create_new: Create New
+      resend_email: Resend Email
+      has_no_payment_methods: "%{enterprise} currently has no payment methods"
+      has_no_shipping_methods: "%{enterprise} currently has no shipping methods"
+      email_confirmation: "Email confirmation is pending. We've sent a confirmation email to %{email}."
+      not_visible: "%{enterprise} is not visible and so cannot be found on the map or in searches"
+    reports:
+      hidden: HIDDEN
+      unitsize: UNITSIZE
+      total: TOTAL
+      total_items: TOTAL ITEMS
+      supplier_totals: Order Cycle Supplier Totals
+      supplier_totals_by_distributor: Order Cycle Supplier Totals by Distributor
+      totals_by_supplier: Order Cycle Distributor Totals by Supplier
+      customer_totals: Order Cycle Customer Totals
+      all_products: All products
+      inventory: Inventory (on hand)
+      lettuce_share: LettuceShare
+      mailing_list: Mailing List
+      addresses: Addresses
+      payment_methods: Payment Methods Report
+      delivery: Delivery Report
+      tax_types: Tax Types
+      tax_rates: Tax Rates
+      pack_by_customer: Pack By Customer
+      pack_by_supplier: Pack By Supplier
+      orders_and_distributors:
+        name: Orders And Distributors
+        description: Orders with distributor details
+      bulk_coop:
+        name: Bulk Co-Op
+        description: Reports for Bulk Co-Op orders
+      payments:
+        name: Payment Reports
+        description: Reports for Payments
+      orders_and_fulfillment:
+        name: Orders & Fulfillment Reports
+      customers:
+        name: Customers
+        description: Customer details
+      products_and_inventory:
+        name: Products & Inventory
+        description:
+      sales_total:
+        name: Sales Total
+        description: Sales Total For All Orders
+      users_and_enterprises:
+        name: Users & Enterprises
+        description: Enterprise Ownership & Status
+      order_cycle_management:
+        name: Order Cycle Management
+      sales_tax:
+        name: Sales Tax
+        description: Sales Tax For Orders
+      xero_invoices:
+        name: Xero Invoices
+        description: Invoices for import into Xero
+      packing:
+        name: Packing Reports
 # Frontend views
 #
 # These keys are referenced relatively like `t('.message')` in
@@ -612,7 +724,7 @@ en:
     already_ordered:
       cart: "cart"
       message_html: "You have an order for this order cycle already. Check the %{cart} to see the items you ordered before. You can also cancel items as long as the order cycle is open."
-  home:
+  shops:
     hubs:
       show_closed_shops: "Show closed shops"
       hide_closed_shops: "Hide closed shops"
@@ -698,6 +810,10 @@ en:
   on_demand: On demand
   none: None
   not_allowed: Not allowed
+  no_shipping: no shipping methods
+  no_payment: no payment methods
+  no_shipping_or_payment: no shipping or payment methods
+  unconfirmed: unconfirmed
 
   label_shops: "Shops"
   label_map: "Map"
@@ -1132,6 +1248,7 @@ See the %{link} to find out more about %{sitename}'s features and to start using
   products_max_quantity: Max quantity
   products_distributor: Distributor
   products_distributor_info: When you select a distributor for your order, their address and pickup times will be displayed here.
+  products_distribution_adjustment_label: "Product distribution by %{distributor} for %{product}"
 
   shop_trial_expires_in: "Your shopfront trial expires in"
   shop_trial_expired_notice: "Good news! We have decided to extend shopfront trials until further notice."
@@ -1149,6 +1266,7 @@ See the %{link} to find out more about %{sitename}'s features and to start using
   failed_to_create_enterprise: "Failed to create your enterprise."
   failed_to_create_enterprise_unknown: "Failed to create your enterprise.\nPlease ensure all fields are completely filled out."
   failed_to_update_enterprise_unknown: "Failed to update your enterprise.\nPlease ensure all fields are completely filled out."
+  enterprise_confirm_delete_message: "This will also delete the %{product} that this enterprise supplies. Are you sure you want to continue?"
   order_not_saved_yet: "Your order hasn't been saved yet. Give us a few seconds to finish!"
   filter_by: "Filter by"
   hide_filters: "Hide filters"
@@ -1161,6 +1279,8 @@ See the %{link} to find out more about %{sitename}'s features and to start using
   error_required: "can't be blank"
   error_number: "must be number"
   error_email: "must be email address"
+  error_not_found_in_database: "%{name} not found in database"
+  error_no_permission_for_enterprise: "\"%{name}\": you do not have permission to manage products for this enterprise"
   item_handling_fees: "Item Handling Fees (included in item totals)"
   january: "January"
   february: "February"
@@ -1295,6 +1415,9 @@ Please follow the instructions there to make your enterprise visible on the Open
   registration_detail_state_error: "State required"
   registration_detail_country: "Country:"
   registration_detail_country_error: "Please select a country"
+  shipping_method_destroy_error: "That shipping method cannot be deleted as it is referenced by an order: %{number}."
+  accounts_and_billing_task_already_running_error: "A task is already running, please wait until it has finished"
+  accounts_and_billing_start_task_notice: "Task Queued"
   fees: "Fees"
   item_cost: "Item cost"
   bulk: "Bulk"
@@ -1324,6 +1447,8 @@ Please follow the instructions there to make your enterprise visible on the Open
   credit: "Credit"
   Paid: "Paid"
   Ready: "Ready"
+  ok: OK
+  not_visible: not visible
   you_have_no_orders_yet: "You have no orders yet"
   running_balance: "Running balance"
   outstanding_balance: "Outstanding balance"
@@ -1355,11 +1480,15 @@ Please follow the instructions there to make your enterprise visible on the Open
   admin_order_cycles: "Admin Order Cycles"
   open: "Open"
   close: "Close"
+  create: "Create"
+  search: "Search"
   supplier: "Supplier"
   coordinator: "Coordinator"
   distributor: "Distributor"
-  product: "Products"
   enterprise_fees: "Enterprise Fees"
+  process_my_order: "Process My Order"
+  delivery_instructions: Delivery Instructions
+  delivery_method: Delivery Method
   fee_type: "Fee Type"
   tax_category: "Tax Category"
   calculator: "Calculator"
@@ -1388,6 +1517,7 @@ Please follow the instructions there to make your enterprise visible on the Open
   on_hand: "On hand"
   save_changes: "Save Changes"
   order_saved: "Order Saved"
+  no_products: No Products
   spree_admin_overview_enterprises_header: "My Enterprises"
   spree_admin_overview_enterprises_footer: "MANAGE MY ENTERPRISES"
   spree_admin_enterprises_hubs_name: "Name"
@@ -1403,26 +1533,36 @@ Please follow the instructions there to make your enterprise visible on the Open
   spree_admin_enterprises_producers_order_cycles_title: ""
   spree_admin_enterprises_tabs_hubs: "HUBS"
   spree_admin_enterprises_tabs_producers: "PRODUCERS"
-  spree_admin_enterprises_producers_manage_order_cycles: "MANAGE ORDER CYCLES"
   spree_admin_enterprises_producers_manage_products: "MANAGE PRODUCTS"
-  spree_admin_enterprises_producers_orders_cycle_text: "You don't have any active order cycles."
   spree_admin_enterprises_any_active_products_text: "You don't have any active products."
   spree_admin_enterprises_create_new_product: "CREATE A NEW PRODUCT"
-  spree_admin_order_cycles: "Order Cycles"
-  spree_admin_order_cycles_tip: "Order cycles determine when and where your products are available to customers."
-  dashbord: "Dashboard"
   spree_admin_single_enterprise_alert_mail_confirmation: "Please confirm the email address for"
   spree_admin_single_enterprise_alert_mail_sent: "We've sent an email to"
   spree_admin_overview_action_required: "Action Required"
   spree_admin_overview_check_your_inbox: "Please check your inbox for further instructions. Thanks!"
+  spree_admin_unit_value: Unit Value
+  spree_admin_unit_description: Unit Description
+  spree_admin_variant_unit: Variant unit
+  spree_admin_variant_unit_scale: Variant unit scale
+  spree_admin_variant_unit_name: Variant unit name
   change_package: "Change Package"
   spree_admin_single_enterprise_hint: "Hint: To allow people to find you, turn on your visibility under"
+  spree_admin_eg_pickup_from_school: "eg. 'Pick-up from Primary School'"
+  spree_admin_eg_collect_your_order: "eg. 'Please collect your order from 123 Imaginary St, Northcote, 3070'"
+  spree_classification_primary_taxon_error: "Taxon %{taxon} is the primary taxon of %{product} and cannot be deleted"
+  spree_order_availability_error: "Distributor or order cycle cannot supply the products in your cart"
+  spree_order_populator_error: "That distributor or order cycle can't supply all the products in your cart. Please choose another."
+  spree_order_populator_availability_error: "That product is not available from the chosen distributor or order cycle."
+  spree_distributors_error: "At least one hub must be selected"
+  spree_user_enterprise_limit_error: "^%{email} is not permitted to own any more enterprises (limit is %{enterprise_limit})."
+  spree_variant_product_error: must have at least one variant
   your_profil_live: "Your profile live"
   on_ofn_map: "on the Open Food Network map"
   see: "See"
   live: "live"
   manage: "Manage"
   resend: "Resend"
+  trial: Trial
   add_and_manage_products: "Add & manage products"
   add_and_manage_order_cycles: "Add & manage order cycles"
   manage_order_cycles: "Manage order cycles"
@@ -1472,11 +1612,64 @@ Please follow the instructions there to make your enterprise visible on the Open
   report_order_cycle: "Order Cycle: "
   report_entreprises: "Enterprises: "
   report_users: "Users: "
-  report_tax_rates: "Tax rates"
-  report_tax_types: "Tax types"
-  report_header_order_number: "Order number"
-  report_header_date: "Date"
-  report_header_items: "Items"
+  report_tax_rates: Tax rates
+  report_tax_types: Tax types
+  report_header_tax_type: Tax Type
+  report_header_tracking_name_1: Tracking Name 1
+  report_header_tracking_name_2: Tracking Name 2
+  report_header_tracking_option_1: Tracking Option 1
+  report_header_tracking_option_2: Tracking Option 2
+  report_header_branding_theme: Branding Theme
+  report_header_currency: Currency
+  report_header_order_cycle: Order Cycle
+  report_header_user: User
+  report_header_email: Email
+  report_header_status: Status
+  report_header_comments: Comments
+  report_header_contact_name: Contact Name
+  report_header_first_name: First Name
+  report_header_last_name: Last Name
+  report_header_suburb: Suburb
+  report_header_phone: Phone
+  report_header_suburb: Suburb
+  report_header_address: Address
+  report_header_billing_address: Billing Address
+  report_header_relationship: Relationship
+  report_header_hub: Hub
+  report_header_hub_address: Hub Address
+  report_header_to_hub: To Hub
+  report_header_hub_code: Hub Code
+  report_header_code: Code
+  report_header_paid: Paid?
+  report_header_delivery: Delivery?
+  report_header_shipping: Shipping
+  report_header_shipping_method: Shipping Method
+  report_header_shipping_instructions: Shipping instructions
+  report_header_ship_street: Ship Street
+  report_header_ship_street_2: Ship Street 2
+  report_header_ship_city: Ship City
+  report_header_ship_postcode: Ship Postcode
+  report_header_ship_state: Ship State
+  report_header_billing_street: Billing Street
+  report_header_billing_street_2: Billing Street 2
+  report_header_billing_street_3: Billing Street 3
+  report_header_billing_street_4: Billing Street 4
+  report_header_billing_city: Billing City
+  report_header_billing_postcode: Billing Postcode
+  report_header_billing_region: Billing Region
+  report_header_billing_state: Billing State
+  report_header_billing_country: Billing Country
+  report_header_incoming_transport: Incoming Transport
+  report_header_special_instructions: Special Instructions
+  report_header_order_number: Order number
+  report_header_invoice_number: Invoice Number
+  report_header_reference: Reference
+  report_header_invoice_date: Invoice Date
+  report_header_due_date: Due Date
+  report_header_date: Date
+  report_header_confirmation_date: Confirmation Date
+  report_header_tags: Tags
+  report_header_items: Items
   report_header_items_total: "Items total %{currency_symbol}"
   report_header_taxable_items_total: "Taxable Items Total (%{currency_symbol})"
   report_header_sales_tax: "Sales Tax (%{currency_symbol})"
@@ -1484,10 +1677,104 @@ Please follow the instructions there to make your enterprise visible on the Open
   report_header_tax_on_delivery: "Tax on Delivery (%{currency_symbol})"
   report_header_tax_on_fees: "Tax on Fees (%{currency_symbol})"
   report_header_total_tax: "Total Tax (%{currency_symbol})"
-  report_header_customer: "Customer"
-  report_header_distributor: "Distributor"
+  report_header_enterprise: Enterprise
+  report_header_customer: Customer
+  report_header_customer_code: Customer Code
+  report_header_product: Product
+  report_header_product_properties: Product Properties
+  report_header_description: Description
+  report_header_qty: Qty
+  report_header_quantity: Quantity
+  report_header_max_quantity: Max Quantity
+  report_header_variant: Variant
+  report_header_variant_value: Variant Value
+  report_header_variant_unit: Variant Unit
+  report_header_total_available: Total available
+  report_header_unallocated: Unallocated
+  report_header_max_quantity_excess: Max Quantity Excess
+  report_header_taxon: Taxon
+  report_header_taxons: Taxons
+  report_header_supplier: Supplier
+  report_header_producer: Producer
+  report_header_producer_suburb: Producer Suburb
+  report_header_unit: Unit
+  report_header_group_buy_unit_quantity: Group Buy Unit Quantity
+  report_header_cost: Cost
+  report_header_shipping_cost: Shipping Cost
+  report_header_curr_cost_per_unit: Curr. Cost per Unit
+  report_header_total_shipping_cost: Total Shipping Cost
+  report_header_payment_method: Payment Method
+  report_header_sells: Sells
+  report_header_visible: Visible
+  report_header_unit_price: Unit Price
+  report_header_price: Price
+  report_header_unit_size: Unit Size
+  report_header_pack_size: Pack Size
+  report_header_distributor: Distributor
+  report_header_distributor_address: Distributor address
+  report_header_distributor_city: Distributor city
+  report_header_distributor_postcode: Distributor postcode
+  report_header_delivery_address: Delivery Address
+  report_header_delivery_postcode: Delivery Postcode
+  report_header_bulk_unit_size: Bulk Unit Size
+  report_header_weight: Weight
+  report_header_sum_total: Sum Total
+  report_header_date_of_order: Date of Order
+  report_header_amount_owing: Amount Owing
+  report_header_amount_paid: Amount Paid
+  report_header_units_required: Units Required
+  report_header_remainder: Remainder
+  report_header_order_date: Order date
+  report_header_order_id: Order Id
+  report_header_item_name: Item name
+  report_header_inventory_item_code: Inventory Item Code
+  report_header_temp_controlled_items: Temp Controlled Items?
+  report_header_customer_name: Customer Name
+  report_header_customer_email: Customer Email
+  report_header_customer_phone: Customer Phone
+  report_header_customer_city: Customer City
+  report_header_payment_state: Payment State
+  report_header_payment_type: Payment Type
+  report_header_item_price: "Item (%{currency})"
+  report_header_item_fees_price: "Item + Fees (%{currency})"
+  report_header_admin_handling_fees: "Admin & Handling (%{currency})"
+  report_header_ship_price: "Ship (%{currency})"
+  report_header_pay_fee_price: "Pay fee (%{currency})"
+  report_header_total_price: "Total (%{currency})"
+  report_header_product_total_price: "Product Total (%{currency})"
+  report_header_shipping_total_price: "Shipping Total (%{currency})"
+  report_header_outstanding_balance_price: "Outstanding Balance (%{currency})"
+  report_header_eft_price: "EFT (%{currency})"
+  report_header_paypal_price: "PayPal (%{currency})"
+  report_header_sku: SKU
+  report_header_amount: Amount
+  report_header_unit_amount: Unit Amount
+  report_header_discount: Discount
+  report_header_account_code: Account Code
+  report_header_balance: Balance
+  report_header_total: Total
+  report_header_total_cost: "Total Cost"
+  report_header_total_ordered: Total Ordered
+  report_header_total_max: Total Max
+  report_header_total_units: Total Units
+  report_header_sum_max_total: "Sum Max Total"
   report_header_total_excl_vat: "Total excl. tax (%{currency_symbol})"
   report_header_total_incl_vat: "Total incl. tax (%{currency_symbol})"
+  report_header_gst_incl: GST incl.
+  report_header_grower_and_method: Grower and growing method
+  report_header_temp_controlled: TempControlled?
+  report_header_is_producer: Producer?
+  report_header_not_confirmed: Not Confirmed
+  report_header_gst_on_income: GST on Income
+  report_header_gst_free_income: GST Free Income
+  report_header_total_untaxable_produce: Total untaxable produce (no tax)
+  report_header_total_taxable_produce: Total taxable produce (tax inclusive)
+  report_header_total_untaxable_fees: Total untaxable fees (no tax)
+  report_header_total_taxable_fees: Total taxable fees (tax inclusive)
+  report_header_delivery_shipping_cost: Delivery Shipping Cost (tax inclusive)
+  report_header_transaction_fee: Transaction Fee (no tax)
+  report_header_total_untaxable_admin: Total untaxable admin adjustments (no tax)
+  report_header_total_taxable_admin: Total taxable admin adjustments (tax inclusive)
   initial_invoice_number: "Initial invoice number:"
   invoice_date: "Invoice date:"
   due_date: "Due date:"
@@ -1522,17 +1809,70 @@ Please follow the instructions there to make your enterprise visible on the Open
   shipping_methods: "Shipping Methods"
   payment_methods: "Payment Methods"
   payment_method_fee: "Transaction fee"
-  enterprise_fees: "Enterprise Fees"
   inventory_settings: "Inventory Settings"
   tag_rules: "Tag Rules"
   shop_preferences: "Shop Preferences"
+  enterprise_fee_whole_order: Whole order
+  enterprise_fee_by: "%{type} fee by %{role} %{enterprise_name}"
   validation_msg_relationship_already_established: "^That relationship is already established."
   validation_msg_at_least_one_hub: "^At least one hub must be selected"
   validation_msg_product_category_cant_be_blank: "^Product Category cant be blank"
   validation_msg_tax_category_cant_be_blank: "^Tax Category can't be blank"
   validation_msg_is_associated_with_an_exising_customer: "is associated with an existing customer"
-
+  content_configuration_pricing_table: "(TODO: Pricing table)"
+  content_configuration_case_studies: "(TODO: Case studies)"
+  content_configuration_detail: "(TODO: Detail)"
+  enterprise_name_error: "has already been taken. If this is your enterprise and you would like to claim ownership, please contact the current manager of this profile at %{email}."
+  enterprise_owner_error: "^%{email} is not permitted to own any more enterprises (limit is %{enterprise_limit})."
+  enterprise_role_uniqueness_error: "^That role is already present."
+  inventory_item_visibility_error: must be true or false
+  product_importer_file_error: "error: no file uploaded"
+  product_importer_spreadsheet_error: "could not process file: invalid filetype"
+  product_importer_products_save_error: did not save any products successfully
+  product_import_file_not_found_notice: 'File not found or could not be opened'
+  product_import_no_data_in_spreadsheet_notice: 'No data found in spreadsheet'
+  order_choosing_hub_notice: Your hub has been selected.
+  order_cycle_selecting_notice: Your order cycle has been selected.
+  adjustments_tax_rate_error: "^Please check that the tax rate for this adjustment is correct."
+  active_distributors_not_ready_for_checkout_message_singular: >-
+    The hub %{distributor_names} is listed in an active order cycle,
+    but does not have valid shipping and payment methods.
+    Until you set these up, customers will not be able to shop at this hub.
+  active_distributors_not_ready_for_checkout_message_plural: >-
+    The hubs %{distributor_names} are listed in an active order cycle,
+    but do not have valid shipping and payment methods.
+    Until you set these up, customers will not be able to shop at these hubs.
+  enterprise_fees_update_notice: Your enterprise fees have been updated.
+  enterprise_fees_destroy_error: "That enterprise fee cannot be deleted as it is referenced by a product distribution: %{id} - %{name}."
+  enterprise_register_package_error: "Please select a package"
+  enterprise_register_error: "Could not complete registration for %{enterprise}"
+  enterprise_register_success_notice: "Congratulations! Registration for %{enterprise} is complete!"
+  enterprise_bulk_update_success_notice: "Enterprises updated successfully"
+  enterprise_bulk_update_error: 'Update failed'
+  order_cycles_create_notice: 'Your order cycle has been created.'
+  order_cycles_update_notice: 'Your order cycle has been updated.'
+  order_cycles_bulk_update_notice: 'Order cycles have been updated.'
+  order_cycles_clone_notice: "Your order cycle %{name} has been cloned."
+  order_cycles_email_to_producers_notice: 'Emails to be sent to producers have been queued for sending.'
+  order_cycles_no_permission_to_coordinate_error: "None of your enterprises have permission to coordinate an order cycle"
+  order_cycles_no_permission_to_create_error: "You don't have permission to create an order cycle coordinated by that enterprise"
+  order_cycles_no_permission_to_delete_error: "That order cycle has been selected by a customer and cannot be deleted. To prevent customers from accessing it, please close it instead."
   js:
+    saving: 'Saving...'
+    changes_saved: 'Changes saved.'
+    save_changes_first: Save changes first.
+    all_changes_saved: All changes saved
+    unsaved_changes: You have unsaved changes
+    all_changes_saved_successfully: All changes saved successfully
+    oh_no: "Oh no! I was unable to save your changes."
+    unauthorized: "You are unauthorised to access this page."
+    error: Error
+    unavailable: Unavailable
+    profile: Profile
+    hub: Hub
+    shop: Shop
+    choose: Choose
+    resolve_errors: Please resolve the following errors
     admin:
       modals:
         got_it: Got it
@@ -1649,13 +1989,71 @@ Please follow the instructions there to make your enterprise visible on the Open
         in your cart have reduced. Here's what's changed:
       now_out_of_stock: is now out of stock.
       only_n_remainging: "now only has %{num} remaining."
-
+    variant_overrides:
+      inventory_products: "Inventory Products"
+      hidden_products: "Hidden Products"
+      new_products: "New Products"
+      reset_stock_levels: Reset Stock Levels To Defaults
+      changes_to: Changes to
+      one_override: one override
+      overrides: overrides
+      remain_unsaved: remain unsaved.
+      no_changes_to_save: No changes to save.'
+      no_authorisation: "I couldn't get authorisation to save those changes, so they remain unsaved."
+      some_trouble: "I had some trouble saving: %{errors}"
+      changing_on_hand_stock: Changing on hand stock levels...
+      stock_reset: Stocks reset to defaults.
+    tag_rules:
+      show_hide_variants: 'Show or Hide variants in my shopfront'
+      show_hide_shipping: 'Show or Hide shipping methods at checkout'
+      show_hide_payment: 'Show or Hide payment methods at checkout'
+      show_hide_order_cycles: 'Show or Hide order cycles in my shopfront'
+      visible: VISIBLE
+      not_visible: NOT VISIBLE
+    services:
+      unsaved_changes_message: Unsaved changes currently exist, save now or ignore?
+      save: SAVE
+      ignore: IGNORE
+      add_to_order_cycle: "add to order cycle"
+      manage_products: "manage products"
+      edit_profile: "edit profile"
+      add_products_to_inventory: "add products to inventory"
+    resources:
+      could_not_delete_customer: 'Could not delete customer'
+    product_import:
+      confirmation: |
+        This will set stock level to zero on all products for this
+        enterprise that are not present in the uploaded file.
+    order_cycles:
+      update_success: 'Your order cycle has been updated.'
+      no_distributors: There are no distributors in this order cycle. This order cycle will not be visible to customers until you add one. Would you like to continue saving this order cycle?'
+    enterprises:
+      producer: "Producer"
+      non_producer: "Non-Producer"
+    customers:
+      select_shop: 'Please select a shop first'
+      could_not_create: Sorry! Could not create
   producers:
     signup:
       start_free_profile: "Start with a free profile, and expand when you're ready!"
 
   spree:
     admin:
+      orders:
+        form:
+          distribution_fields:
+            title: Distribution
+            distributor: "Distributor:"
+            order_cycle: "Order cycle:"
+      overview:
+        order_cycles:
+          order_cycles: "Order Cycles"
+          order_cycles_tip: "Order cycles determine when and where your products are available to customers."
+          you_have_active:
+            zero: "You don't have any active order cycles."
+            one: "You have one active order cycle."
+            other: "You have %{count} active order cycles."
+          manage_order_cycles: "MANAGE ORDER CYCLES"
       products:
         bulk_edit:
           header:
@@ -1664,6 +2062,12 @@ Please follow the instructions there to make your enterprise visible on the Open
             title: LOADING PRODUCTS
             no_products: "No products yet. Why don't you add some?"
             no_results: "Sorry, no results match"
+      reports:
+        bulk_coop:
+          bulk_coop_supplier_report: 'Bulk Co-op - Totals by Supplier'
+          bulk_coop_allocation: 'Bulk Co-op - Allocation'
+          bulk_coop_packing_sheets: 'Bulk Co-op - Packing Sheets'
+          bulk_coop_customer_payments: 'Bulk Co-op - Customer Payments'
       variants:
         autocomplete:
           producer_name: Producer
