@@ -11,14 +11,14 @@ module OpenFoodNetwork
 
     def header
       [
-          "User",
-          "Relationship",
-          "Enterprise",
-          "Producer?",
-          "Sells",
-          "Visible",
-          "Confirmation Date"
-        ]
+        I18n.t(:report_header_user),
+        I18n.t(:report_header_relationship),
+        I18n.t(:report_header_enterprise),
+        I18n.t(:report_header_is_producer),
+        I18n.t(:report_header_sells),
+        I18n.t(:report_header_visible),
+        I18n.t(:report_header_confirmation_date),
+      ]
     end
 
     def table
@@ -81,7 +81,7 @@ module OpenFoodNetwork
     end
 
     def to_local_datetime(string)
-      return "Not Confirmed" if string.nil?
+      return I18n.t(:report_header_not_confirmed) if string.nil?
       string.to_datetime.in_time_zone.strftime "%Y-%m-%d %H:%M"
     end
   end

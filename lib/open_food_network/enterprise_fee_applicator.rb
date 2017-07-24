@@ -24,11 +24,11 @@ module OpenFoodNetwork
     end
 
     def order_adjustment_label
-      "Whole order - #{base_adjustment_label}"
+      "#{I18n.t(:enterprise_fee_whole_order)} - #{base_adjustment_label}"
     end
 
     def base_adjustment_label
-      "#{enterprise_fee.fee_type} fee by #{role} #{enterprise_fee.enterprise.name}"
+      I18n.t(:enterprise_fee_by, type: enterprise_fee.fee_type, role: role, enterprise_name: enterprise_fee.enterprise.name)
     end
 
     def adjustment_tax(adjustable, adjustment)
